@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - master
-  workflow_dispatch:  # হাতে manually trigger করতে পারবেন
+  workflow_dispatch: 
 
 jobs:
   build-windows:
@@ -13,41 +13,37 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      # ১. কোড চেকআউট
+     
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ২. Node.js সেটআপ
+     
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      # ৩. Rust সেটআপ (stable)
+      
       - name: Setup Rust (stable)
         uses: dtolnay/rust-toolchain@stable
 
-      # ৪. Rust cache (বিল্ড অনেক দ্রুত হয়)
+    
       - name: Cache Rust dependencies
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './src-tauri -> target'
 
-      # ৫. Node modules ইনস্টল
       - name: Install Node dependencies
         run: npm ci
 
-      # ৬. Tauri Windows বিল্ড
       - name: Build Tauri app for Windows
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          # Windows-এ শুধু msi ও nsis (exe) বিল্ড করুন
           args: --target x86_64-pc-windows-msvc --bundles msi,nsis
 
-      # ৭. .msi আপলোড করুন
       - name: Upload MSI Installer
         uses: actions/upload-artifact@v4
         with:
@@ -56,7 +52,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
-      # ৮. .exe (NSIS) আপলোড করুন
+    
       - name: Upload EXE Installer (NSIS)
         uses: actions/upload-artifact@v4
         with:
