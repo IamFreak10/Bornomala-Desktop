@@ -35,12 +35,21 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses || true
+
       - name: Setup Android NDK
         uses: nttld/setup-ndk@v1
         id: setup-ndk
         with:
           ndk-version: r26d
           link-to-sdk: true
+
+      - name: Install Android SDK packages
+        run: |
+          sdkmanager "platform-tools"
+          sdkmanager "platforms;android-35"
+          sdkmanager "build-tools;35.0.0"
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
